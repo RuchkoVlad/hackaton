@@ -6,6 +6,9 @@ import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import {Weekly} from "../Weekly/Weekly";
+import {Monthly} from "../Monthly/Monthly";
+import {Year} from "../Year/Year";
+
 const daysInMonth = function (date) {
     return 32 - new Date(date.getFullYear(), date.getMonth(), 32).getDate();
 };
@@ -111,7 +114,6 @@ export class Calendar extends React.Component {
                 year: state.year + 1
             }));
         }
-
     }
 
     movePrevious() {
@@ -138,41 +140,36 @@ export class Calendar extends React.Component {
         const calendarDays = createCalendar(this.state.year, this.state.month);
         return (<div className={'main'}>
             <div className="calendar">
-
+                <Weekly/>
                 <div className="calendar__buttons">
-                    <Button onClick={this.movePrevious}>Попередній місяць</Button>
+                    <Button variant="light" onClick={this.movePrevious}> &lt; </Button>
+                    <Button variant="light" onClick={this.moveForward}> > </Button>
                     <Button onClick={this.currentMonth}>Сьогодні</Button>
-                    <Button onClick={this.moveForward}>Наступний місяць</Button>
                 </div>
                 <DropdownButton id="dropdown-basic-button" title="Режим вiдображення" variant="Secondary">
-                    <Dropdown.Item href="#/action-1">Тиждень</Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">Мiсяць</Dropdown.Item>
-                    <Dropdown.Item href="#/action-3">Рiк</Dropdown.Item>
+                    <Dropdown.Item>Тиждень</Dropdown.Item>
+                    <Dropdown.Item>Мiсяць</Dropdown.Item>
+                    <Dropdown.Item>Рiк</Dropdown.Item>
                 </DropdownButton>
-                <span className="calendar__date--main">Місяць: {monthName[this.state.month]}, Рік: {this.state.year}</span>
-                <div className="calendar__header">
-                    <div className="calendar__dayOfWeek">пн</div>
-                    <div className="calendar__dayOfWeek">вт</div>
-                    <div className="calendar__dayOfWeek">ср</div>
-                    <div className="calendar__dayOfWeek">чт</div>
-                    <div className="calendar__dayOfWeek">пт</div>
-                    <div className="calendar__dayOfWeek">сб</div>
-                    <div className="calendar__dayOfWeek">нд</div>
-                </div>
-                <div className="calendar__body">
-                    {calendarDays.map((day, i) => {
-                        return day ? <div className={'calendar__day'} key={i} onClick={() => {
-                            this.openModal(day.fullDate);
-                        }}>
-                            <div className={'calendar__date'}>{day.dateNumber}</div>
-                            <div className={'calendar__event'}>
-                                <ol>
-                                    {this.renderTasks(day.fullDate)}
-                                </ol>
-                            </div>
-                        </div> : <div className={'calendar__day'}></div>
-                    })}
-                </div>
+
+                <Monthly
+                    month={this.state.month}
+                    year={this.state.year}
+                    calendarDays={calendarDays}
+                    openModal={this.openModal}
+                    renderTasks={this.renderTasks}
+                    monthName={monthName}
+                />
+
+                <Year
+                    year={this.state.year}
+                    calendarDays={calendarDays}
+                    openModal={this.openModal}
+                    renderTasks={this.renderTasks}
+                    monthName={monthName}
+                    createCalendar={createCalendar}/>
+
+
             </div>
             {this.state.isModalOpened ? <PopUp openModal={this.openModal}
                                                cancelButton={this.cancelButton}

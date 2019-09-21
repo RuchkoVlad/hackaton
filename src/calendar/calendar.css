@@ -49,7 +49,8 @@
 }
 .calendar__buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    margin-top: 10px;
 }
 .calendar__event {
     display: flex;
@@ -70,7 +71,11 @@
 }
 
 .btn.btn-primary {
-    margin: 15px 0 15px 0;
+    margin: 15px;
+}
+
+.btn.btn-light  {
+    margin: 5px;
 }
 
 .calendar__date {
