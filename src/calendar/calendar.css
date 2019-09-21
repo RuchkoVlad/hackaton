@@ -7,17 +7,26 @@
     flex-grow: 0;
 }
 
+.calendar__date--main {
+    font-family: Roboto, sans-serif;
+    font-size: 25px;
+    color: #3c4043;
+}
+
 .calendar__header {
     display: flex;
 }
 
 .calendar__dayOfWeek {
     width: calc(100% / 7);
-    border: 1px solid black;
-    margin-left: -1px;
+    border-collapse: collapse;
+    border: 1px solid #dadce0;
     text-align: center;
     box-sizing: border-box;
-
+    color: #70757a;
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 40px;
 }
 
 .calendar__body {
@@ -28,23 +37,20 @@
 
 .calendar__day {
     width: calc(100% / 7);
-    border: 1px solid black;
-    margin-left: -1px;
-    margin-top: -1px;
+    border: 1px solid #dadce0;
     text-align: center;
     box-sizing: border-box;
     font-size: 30px;
     display: flex;
     flex-direction: column;
     flex-grow: 0;
-
-
+    border-collapse: collapse;
+    color: #3c4043;
 }
-
-.calendar__date {
-
+.calendar__buttons {
+    display: flex;
+    justify-content: space-between;
 }
-
 .calendar__event {
     display: flex;
     flex-direction: column;
@@ -61,6 +67,14 @@
 
 .calendar__task {
     font-size: 18px;
-
 }
 
+.btn.btn-primary {
+    margin: 15px 0 15px 0;
+}
+
+.calendar__date {
+    font-family: Roboto, sans-serif;
+    font-size: 19px;
+    color: #3c4043;
+}

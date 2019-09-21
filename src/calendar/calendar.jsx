@@ -2,7 +2,10 @@ import React from 'react';
 import './calendar.css';
 import '../pop-up/pop-up.css';
 import {PopUp} from "../pop-up/pop-up";
-
+import Button from "react-bootstrap/Button";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import {Weekly} from "../Weekly/Weekly";
 const daysInMonth = function (date) {
     return 32 - new Date(date.getFullYear(), date.getMonth(), 32).getDate();
 };
@@ -32,22 +35,11 @@ function createCalendar(year, month) {
     for (let i = daysInMonth(date) + startPosisiton - 1; i % 7; i++) {
         body.push('');
     }
+    console.log(body);
     return body;
 }
 
-let tasks = {};
-
-function renderTasks(date) {
-    let renderTask;
-    if (tasks[date]) {
-        renderTask = tasks[date].map((task) => {
-            return <li className={'calendar__task'}>{task.title}</li>
-        })
-    } else {
-        return
-    }
-    return renderTask;
-}
+// let tasks = {};
 
 export class Calendar extends React.Component {
     constructor(props) {
@@ -57,6 +49,7 @@ export class Calendar extends React.Component {
             year: new Date().getFullYear(),
             isModalOpened: false,
             openedDate: null,
+            tasks: JSON.parse(window.localStorage.getItem("tasks")) || {},
         };
 
         this.moveForward = this.moveForward.bind(this);
@@ -65,7 +58,20 @@ export class Calendar extends React.Component {
         this.openModal = this.openModal.bind(this);
         this.cancelButton = this.cancelButton.bind(this);
         this.saveButton = this.saveButton.bind(this);
+        this.renderTasks = this.renderTasks.bind(this);
     };
+
+    renderTasks(date) {
+        let renderTask;
+        if (this.state.tasks[date]) {
+            renderTask = this.state.tasks[date].map((task) => {
+                return <li className={'calendar__task'}>{task.title}</li>
+            })
+        } else {
+            return
+        }
+        return renderTask;
+    }
 
     openModal(openedDate) {
         this.setState(state => ({
@@ -79,11 +85,13 @@ export class Calendar extends React.Component {
 
 
         if (task !== '') {
-            if (tasks[this.state.openedDate]) {
-                tasks[this.state.openedDate].push({title: task});
+            if (this.state.tasks[this.state.openedDate]) {
+                this.state.tasks[this.state.openedDate].push({title: task});
+                window.localStorage.setItem("tasks", JSON.stringify({...this.state.tasks}));
             } else {
-                tasks[this.state.openedDate] = [];
-                tasks[this.state.openedDate].push({title: task});
+                this.state.tasks[this.state.openedDate] = [];
+                this.state.tasks[this.state.openedDate].push({title: task});
+                window.localStorage.setItem("tasks", JSON.stringify({...this.state.tasks}));
             }
         }
     }
@@ -130,12 +138,18 @@ export class Calendar extends React.Component {
         const calendarDays = createCalendar(this.state.year, this.state.month);
         return (<div className={'main'}>
             <div className="calendar">
+
                 <div className="calendar__buttons">
-                    <button onClick={this.movePrevious}>Попередній місяць</button>
-                    <button onClick={this.currentMonth}>Сьогодні</button>
-                    <button onClick={this.moveForward}>Наступний місяць</button>
+                    <Button onClick={this.movePrevious}>Попередній місяць</Button>
+                    <Button onClick={this.currentMonth}>Сьогодні</Button>
+                    <Button onClick={this.moveForward}>Наступний місяць</Button>
                 </div>
-                <span>Місяць: {monthName[this.state.month]}, Рік: {this.state.year}</span>
+                <DropdownButton id="dropdown-basic-button" title="Режим вiдображення" variant="Secondary">
+                    <Dropdown.Item href="#/action-1">Тиждень</Dropdown.Item>
+                    <Dropdown.Item href="#/action-2">Мiсяць</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Рiк</Dropdown.Item>
+                </DropdownButton>
+                <span className="calendar__date--main">Місяць: {monthName[this.state.month]}, Рік: {this.state.year}</span>
                 <div className="calendar__header">
                     <div className="calendar__dayOfWeek">пн</div>
                     <div className="calendar__dayOfWeek">вт</div>
@@ -151,9 +165,11 @@ export class Calendar extends React.Component {
                             this.openModal(day.fullDate);
                         }}>
                             <div className={'calendar__date'}>{day.dateNumber}</div>
-                            <div className={'calendar__event'}><ol>
-                                {renderTasks(day.fullDate)}
-                            </ol></div>
+                            <div className={'calendar__event'}>
+                                <ol>
+                                    {this.renderTasks(day.fullDate)}
+                                </ol>
+                            </div>
                         </div> : <div className={'calendar__day'}></div>
                     })}
                 </div>

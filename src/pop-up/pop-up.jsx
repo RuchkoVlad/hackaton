@@ -1,5 +1,7 @@
 import React from 'react';
 import './pop-up.css';
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 
 export class PopUp extends React.Component {
     constructor(props) {
@@ -15,6 +17,23 @@ export class PopUp extends React.Component {
 
     render() {
         return (<div className={'pop-up__wrapper'}>
+
+            <Form>
+                <Form.Group controlId="formBasicEmail">
+                    <Form.Label>Email address</Form.Label>
+                    <Form.Control type="email" placeholder="Enter email" />
+                    <Form.Text className="text-muted">
+                        We'll never share your email with anyone else.
+                    </Form.Text>
+                </Form.Group>
+                <Button variant="primary" type="submit">
+                    Submit
+                </Button>
+                <Button variant="primary" type="submit">
+                    Submit
+                </Button>
+            </Form>
+
             <div className="pop-up">
                 <div className="pop-up__upper"><h2 className="pop-up__title">Введите задачу</h2>
                     <input type="text" className="pop-up__description" placeholder="Задача"
