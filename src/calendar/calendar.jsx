@@ -38,7 +38,6 @@ function createCalendar(year, month) {
     for (let i = daysInMonth(date) + startPosisiton - 1; i % 7; i++) {
         body.push('');
     }
-    console.log(body);
     return body;
 }
 
@@ -53,6 +52,7 @@ export class Calendar extends React.Component {
             isModalOpened: false,
             openedDate: null,
             tasks: JSON.parse(window.localStorage.getItem("tasks")) || {},
+            typeOfView: window.localStorage.getItem("typeOfView") || "month",
         };
 
         this.moveForward = this.moveForward.bind(this);
@@ -62,6 +62,7 @@ export class Calendar extends React.Component {
         this.cancelButton = this.cancelButton.bind(this);
         this.saveButton = this.saveButton.bind(this);
         this.renderTasks = this.renderTasks.bind(this);
+        this.handleChangeOfView = this.handleChangeOfView.bind(this);
     };
 
     renderTasks(date) {
@@ -104,29 +105,56 @@ export class Calendar extends React.Component {
     }
 
     moveForward() {
-        this.setState(state => ({
-            month: state.month + 1
-        }));
+        switch (this.state.typeOfView) {
+            case "month": {
+                this.setState(state => ({
+                    month: state.month + 1
+                }));
 
-        if (this.state.month > 10) {
-            this.setState(state => ({
-                month: 0,
-                year: state.year + 1
-            }));
+                if (this.state.month > 10) {
+                    this.setState(state => ({
+                        month: 0,
+                        year: state.year + 1
+                    }));
+                }
+            }
+                break;
+            case "year": {
+                this.setState(state => ({
+                    year: state.year + 1
+                }));
+            }
+
         }
+
     }
 
     movePrevious() {
-        this.setState(state => ({
-            month: state.month - 1
-        }));
 
-        if (this.state.month < 1) {
-            this.setState(state => ({
-                month: 11,
-                year: state.year - 1
-            }));
+        switch (this.state.typeOfView) {
+            case "month": {
+                this.setState(state => ({
+                    month: state.month - 1
+                }));
+
+                if (this.state.month < 1) {
+                    this.setState(state => ({
+                        month: 11,
+                        year: state.year - 1
+                    }));
+                }
+                break;
+            }
+
+            case "year": {
+                this.setState(state => ({
+                    year: state.year - 1
+                }));
+                break;
+            }
+
         }
+
     }
 
     currentMonth() {
@@ -136,38 +164,57 @@ export class Calendar extends React.Component {
         }))
     }
 
+    handleChangeOfView(event) {
+        this.setState({
+            typeOfView: event.target.value
+        });
+        window.localStorage.setItem("typeOfView", event.target.value);
+    }
+
     render() {
         const calendarDays = createCalendar(this.state.year, this.state.month);
         return (<div className={'main'}>
             <div className="calendar">
-                <Weekly/>
                 <div className="calendar__buttons">
                     <Button variant="light" onClick={this.movePrevious}> &lt; </Button>
                     <Button variant="light" onClick={this.moveForward}> > </Button>
                     <Button onClick={this.currentMonth}>Сьогодні</Button>
                 </div>
-                <DropdownButton id="dropdown-basic-button" title="Режим вiдображення" variant="Secondary">
-                    <Dropdown.Item>Тиждень</Dropdown.Item>
-                    <Dropdown.Item>Мiсяць</Dropdown.Item>
-                    <Dropdown.Item>Рiк</Dropdown.Item>
-                </DropdownButton>
+                <select
+                    onChange={this.handleChangeOfView}
+                    defaultValue={this.state.typeOfView}
+                >
+                    {/*<option value={"week"}>Тиждень</option>*/}
+                    <option value={"month"}>Місяць</option>
+                    <option value={"year"}>Рік</option>
+                </select>
 
-                <Monthly
-                    month={this.state.month}
-                    year={this.state.year}
-                    calendarDays={calendarDays}
-                    openModal={this.openModal}
-                    renderTasks={this.renderTasks}
-                    monthName={monthName}
-                />
+                {
+                    (() => {
+                        switch (this.state.typeOfView) {
+                            case 'week':
+                                return <Weekly/>;
 
-                <Year
-                    year={this.state.year}
-                    calendarDays={calendarDays}
-                    openModal={this.openModal}
-                    renderTasks={this.renderTasks}
-                    monthName={monthName}
-                    createCalendar={createCalendar}/>
+                            case "month":
+                                return <Monthly
+                                    month={this.state.month}
+                                    year={this.state.year}
+                                    calendarDays={calendarDays}
+                                    openModal={this.openModal}
+                                    renderTasks={this.renderTasks}
+                                    monthName={monthName}
+                                />;
+                            case "year":
+                                return <Year
+                                    year={this.state.year}
+                                    calendarDays={calendarDays}
+                                    openModal={this.openModal}
+                                    renderTasks={this.renderTasks}
+                                    monthName={monthName}
+                                    createCalendar={createCalendar}/>
+                        }
+                    })()
+                }
 
 
             </div>
